@@ -54,7 +54,6 @@ TrainConnect is a microservices-based system designed to manage training opportu
 
 Each microservice is independently deployable and manages its own database.
 
----
 
 ## System Components
 
