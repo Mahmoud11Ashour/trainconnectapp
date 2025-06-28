@@ -1,0 +1,150 @@
+version: '3.8'
+
+services:
+
+  configserver:
+    image: openjdk:17-jdk-slim
+    container_name: configserver
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./config-repo:/config
+    working_dir: /app
+    command: ["java", "-jar", "configserver-0.0.1-SNAPSHOT.jar"]
+    depends_on:
+      - discoveryserver
+    networks:
+      - trainconnect-net
+
+  discoveryserver:
+    image: openjdk:17-jdk-slim
+    container_name: discoveryserver
+    ports:
+      - "8761:8761"
+    working_dir: /app
+    command: ["java", "-jar", "discoveryserver-0.0.1-SNAPSHOT.jar"]
+    networks:
+      - trainconnect-net
+
+  apigateway:
+    image: openjdk:17-jdk-slim
+    container_name: apigateway
+    ports:
+      - "8080:8080"
+    working_dir: /app
+    command: ["java", "-jar", "apigateway-0.0.1-SNAPSHOT.jar"]
+    depends_on:
+      - discoveryserver
+    networks:
+      - trainconnect-net
+
+  studentservice:
+    image: openjdk:17-jdk-slim
+    container_name: studentservice
+    ports:
+      - "8083:8083"
+    working_dir: /app
+    command: ["java", "-jar", "studentservice-0.0.1-SNAPSHOT.jar"]
+    depends_on:
+      - mysql
+      - configserver
+      - discoveryserver
+    networks:
+      - trainconnect-net
+
+  companyservice:
+    image: openjdk:17-jdk-slim
+    container_name: companyservice
+    ports:
+      - "8084:8084"
+    working_dir: /app
+    command: ["java", "-jar", "companyservice-0.0.1-SNAPSHOT.jar"]
+    depends_on:
+      - mysql
+      - configserver
+      - discoveryserver
+    networks:
+      - trainconnect-net
+
+  applicationservice:
+    image: openjdk:17-jdk-slim
+    container_name: applicationservice
+    ports:
+      - "8085:8085"
+    working_dir: /app
+    command: ["java", "-jar", "applicationservice-0.0.1-SNAPSHOT.jar"]
+    depends_on:
+      - mysql
+      - configserver
+      - discoveryserver
+    networks:
+      - trainconnect-net
+
+  opportunityservice:
+    image: openjdk:17-jdk-slim
+    container_name: opportunityservice
+    ports:
+      - "8086:8086"
+    working_dir: /app
+    command: ["java", "-jar", "opportunityservice-0.0.1-SNAPSHOT.jar"]
+    depends_on:
+      - mysql
+      - configserver
+      - discoveryserver
+    networks:
+      - trainconnect-net
+
+  authservice:
+    image: openjdk:17-jdk-slim
+    container_name: authservice
+    ports:
+      - "8087:8087"
+    working_dir: /app
+    command: ["java", "-jar", "authservice-0.0.1-SNAPSHOT.jar"]
+    depends_on:
+      - mysql
+      - configserver
+      - discoveryserver
+    networks:
+      - trainconnect-net
+
+  notificationservice:
+    image: openjdk:17-jdk-slim
+    container_name: notificationservice
+    ports:
+      - "8088:8088"
+    working_dir: /app
+    command: ["java", "-jar", "notificationservice-0.0.1-SNAPSHOT.jar"]
+    depends_on:
+      - configserver
+      - discoveryserver
+    networks:
+      - trainconnect-net
+
+  reportservice:
+    image: openjdk:17-jdk-slim
+    container_name: reportservice
+    ports:
+      - "8089:8089"
+    working_dir: /app
+    command: ["java", "-jar", "reportservice-0.0.1-SNAPSHOT.jar"]
+    depends_on:
+      - configserver
+      - discoveryserver
+    networks:
+      - trainconnect-net
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: student_db
+    ports:
+      - "3306:3306"
+    networks:
+      - trainconnect-net
+
+networks:
+  trainconnect-net:
+    driver: bridge
